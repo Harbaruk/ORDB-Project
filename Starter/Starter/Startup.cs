@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
+using Starter.API.Attributes;
+using Starter.API.Crypto;
 using Starter.API.Extensions;
+using Starter.Common.DomainTaskStatus;
 using Starter.DAL;
 using Starter.Services.Crypto;
+using Starter.Services.Token;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Starter
@@ -34,6 +41,13 @@ namespace Starter
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureFromSection<CryptoOptions>(Configuration);
+            services.ConfigureFromSection<JwtOptions>(Configuration);
+
+            services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddScoped(typeof(DomainTaskStatus));
+            services.AddScoped(typeof(ValidateModelAttribute));
 
             services.AddDbContext<ProjectDbContext>(o =>
             {
@@ -67,6 +81,22 @@ namespace Starter
            {
                o.RegisterValidatorsFromAssemblyContaining<Startup>();
            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration.GetSection("Jwt")["ValidIssuer"],
+                    ValidAudience = Configuration.GetSection("Jwt")["ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Jwt")["Key"]))
+                };
+            });
 
             services.AddSwaggerGen(c =>
             {
