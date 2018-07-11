@@ -16,6 +16,7 @@ using Newtonsoft.Json.Converters;
 using Starter.API.Attributes;
 using Starter.API.Crypto;
 using Starter.API.Extensions;
+using Starter.API.Policies;
 using Starter.Common.DomainTaskStatus;
 using Starter.DAL;
 using Starter.Services.Crypto;
@@ -46,8 +47,12 @@ namespace Starter
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddScoped<ITokenService, TokenService>();
+
             services.AddScoped(typeof(DomainTaskStatus));
             services.AddScoped(typeof(ValidateModelAttribute));
+
+            services.AddAuthorization(options => options.AddPolicy(AuthPolicies.AuthenticatedUser, AuthenticatedUserPolicy.Policy));
 
             services.AddDbContext<ProjectDbContext>(o =>
             {

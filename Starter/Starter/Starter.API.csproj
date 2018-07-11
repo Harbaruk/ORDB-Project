@@ -5,10 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Validators\" />
     <Folder Include="Providers\" />
-    <Folder Include="Policies\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

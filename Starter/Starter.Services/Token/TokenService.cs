@@ -63,18 +63,6 @@ namespace Starter.Services.Token
             return null;
         }
 
-        public TokenModel GetTokenForConfirmedUser(Guid guid)
-        {
-            var user = _unitOfWork.Repository<UserEntity>().Include(x => x.Tokens).FirstOrDefault(x => x.Id == guid);
-
-            if (user == null)
-            {
-                _taskStatus.AddUnkeyedError("Invalid user");
-                return null;
-            }
-            return BuildToken(user);
-        }
-
         private TokenModel BuildToken(UserEntity user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.Key));

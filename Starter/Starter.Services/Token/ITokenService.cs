@@ -8,7 +8,5 @@ namespace Starter.Services.Token
         TokenModel GetToken(LoginCredentials loginCredentials);
 
         TokenModel GetRefreshToken(RefreshTokenModel refreshToken);
-
-        TokenModel GetTokenForConfirmedUser(Guid guid);
     }
 }
