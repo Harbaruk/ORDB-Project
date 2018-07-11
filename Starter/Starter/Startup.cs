@@ -10,7 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
+using Starter.API.Extensions;
 using Starter.DAL;
+using Starter.Services.Crypto;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Starter
@@ -31,6 +33,8 @@ namespace Starter
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureFromSection<CryptoOptions>(Configuration);
+
             services.AddDbContext<ProjectDbContext>(o =>
             {
                 string connStr = Configuration.GetConnectionString(_hostingEnvironment.EnvironmentName);
