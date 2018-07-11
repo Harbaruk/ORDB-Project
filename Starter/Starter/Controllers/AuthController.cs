@@ -24,6 +24,11 @@ namespace Starter.API.Controllers
             _taskStatus = taskStatus;
         }
 
+        /// <summary>
+        /// Get access token
+        /// </summary>
+        /// <param name="loginCredentials">Base login credentials</param>
+        /// <returns><see cref="TokenModel"/></returns>
         [HttpPost]
         [Route("token")]
         [ServiceFilter(typeof(ValidateModelAttribute))]
