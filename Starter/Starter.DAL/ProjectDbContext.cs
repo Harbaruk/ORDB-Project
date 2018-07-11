@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace Starter.DAL
@@ -36,8 +34,7 @@ namespace Starter.DAL
                 .GetTypes()
                 .Where(type => !string.IsNullOrEmpty(type.Namespace))
                 .Where(type => type.GetInterfaces()
-                                        .FirstOrDefault(y => y.IsGenericType && y.GetGenericTypeDefinition().UnderlyingSystemType
-                                                                                                == typeof(IEntityTypeConfiguration<>)) != null);
+                                        .FirstOrDefault(y => y.IsGenericType && y.GetGenericTypeDefinition().UnderlyingSystemType == typeof(IEntityTypeConfiguration<>)) != null);
 
             MethodInfo genericAddConfig = typeof(ModelBuilder).GetMethod(nameof(ModelBuilder.ApplyConfiguration));
 

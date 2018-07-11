@@ -11,6 +11,8 @@ namespace Starter.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
+            builder.ToTable("Users");
+
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Firstname)
@@ -27,6 +29,9 @@ namespace Starter.DAL.Configurations
 
             builder.Property(x => x.Salt)
                 .IsRequired();
+
+            builder.HasMany(x => x.Tokens)
+                .WithOne(x => x.User);
         }
     }
 }

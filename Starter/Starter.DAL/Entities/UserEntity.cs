@@ -13,5 +13,7 @@ namespace Starter.DAL.Entities
 
         public string Password { get; set; }
         public string Salt { get; set; }
+
+        public ICollection<RefreshTokenEntity> Tokens { get; set; }
     }
 }
