@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Starter.Common.DomainTaskStatus;
 using Starter.DAL.Entities;
 using Starter.DAL.Infrastructure;
+using Starter.Services.CacheManager;
 using Starter.Services.Crypto;
 using Starter.Services.Token.Models;
 
@@ -20,13 +22,20 @@ namespace Starter.Services.Token
         private readonly ICryptoContext _cryptoContext;
         private readonly DomainTaskStatus _taskStatus;
         private readonly IOptions<JwtOptions> _options;
+        private readonly ICacheManager _cacheManager;
 
-        public TokenService(IUnitOfWork unitOfWork, ICryptoContext cryptoContext, DomainTaskStatus taskStatus, IOptions<JwtOptions> options)
+        public TokenService(
+            IUnitOfWork unitOfWork,
+            ICryptoContext cryptoContext,
+            DomainTaskStatus taskStatus,
+            IOptions<JwtOptions> options,
+            ICacheManager cacheManager)
         {
             _unitOfWork = unitOfWork;
             _cryptoContext = cryptoContext;
             _taskStatus = taskStatus;
             _options = options;
+            _cacheManager = cacheManager;
         }
 
         public TokenModel GetRefreshToken(RefreshTokenModel token)
@@ -46,6 +55,10 @@ namespace Starter.Services.Token
 
         public TokenModel GetToken(LoginCredentials loginCredentials)
         {
+            _cacheManager.SetString("user", new UserEntity() { Email = "lol" });
+
+            var value = _cacheManager.GetValue<UserEntity>("user");
+
             var user = _unitOfWork.Repository<UserEntity>().Include(x => x.Tokens).FirstOrDefault(x => x.Email == loginCredentials.Email);
 
             if (user == null)

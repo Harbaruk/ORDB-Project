@@ -24,7 +24,7 @@ using Starter.API.Providers;
 using Starter.Common.DomainTaskStatus;
 using Starter.CompositionRoot;
 using Starter.DAL;
-using Starter.DAL.Infrastructure;
+using Starter.Services.CacheManager;
 using Starter.Services.Crypto;
 using Starter.Services.Providers;
 using Starter.Services.Token;
@@ -52,11 +52,18 @@ namespace Starter
 
             services.ConfigureFromSection<CryptoOptions>(Configuration);
             services.ConfigureFromSection<JwtOptions>(Configuration);
+            services.ConfigureFromSection<RedisOptions>(Configuration);
 
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IAuthenticatedUser, AuthenticatedUserProvider>();
             services.AddAutoMapper();
+            services.AddSingleton<ICacheManager, CacheManager>();
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = Configuration.GetSection("Redis")["ConnectionString"];
+                option.InstanceName = "master";
+            });
 
             services.AddScoped(typeof(DomainTaskStatus));
             services.AddScoped(typeof(ValidateModelAttribute));
