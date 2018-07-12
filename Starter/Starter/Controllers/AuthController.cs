@@ -13,48 +13,29 @@ namespace Starter.API.Controllers
 {
     [Produces("application/json")]
     [Route("api")]
-    public class AuthController : Controller
+    public class AuthController : AbstractController
     {
         private readonly ITokenService _tokenService;
-        private readonly DomainTaskStatus _taskStatus;
 
-        public AuthController(ITokenService tokenService, DomainTaskStatus taskStatus)
+        public AuthController(ITokenService tokenService, DomainTaskStatus taskStatus) : base(taskStatus)
         {
             _tokenService = tokenService;
-            _taskStatus = taskStatus;
         }
 
-        /// <summary>
-        /// Get access token
-        /// </summary>
-        /// <param name="loginCredentials">Base login credentials</param>
-        /// <returns><see cref="TokenModel"/></returns>
         [HttpPost]
         [Route("token")]
-        [ServiceFilter(typeof(ValidateModelAttribute))]
         [ProducesResponseType(typeof(TokenModel), 200)]
         public IActionResult AccessToken([FromBody] LoginCredentials loginCredentials)
         {
-            var token = _tokenService.GetToken(loginCredentials);
-            if (!_taskStatus.HasErrors)
-            {
-                return Ok(token);
-            }
-            return BadRequest(_taskStatus.ErrorCollection);
+            return Ok(_tokenService.GetToken(loginCredentials));
         }
 
         [HttpPost]
         [Route("refresh_token")]
-        [ServiceFilter(typeof(ValidateModelAttribute))]
         [ProducesResponseType(typeof(TokenModel), 200)]
         public IActionResult RefreshToken([FromBody] RefreshTokenModel refreshToken)
         {
-            var token = _tokenService.GetRefreshToken(refreshToken);
-            if (!_taskStatus.HasErrors)
-            {
-                return Ok(token);
-            }
-            return BadRequest(_taskStatus.ErrorCollection);
+            return Ok(_tokenService.GetRefreshToken(refreshToken));
         }
     }
 }

@@ -20,7 +20,9 @@ using Starter.API.Crypto;
 using Starter.API.Extensions;
 using Starter.API.Policies;
 using Starter.Common.DomainTaskStatus;
+using Starter.CompositionRoot;
 using Starter.DAL;
+using Starter.DAL.Infrastructure;
 using Starter.Services.Crypto;
 using Starter.Services.Token;
 using Swashbuckle.AspNetCore.Swagger;
@@ -43,16 +45,17 @@ namespace Starter
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            Compositor.Compose(services);
+
             services.ConfigureFromSection<CryptoOptions>(Configuration);
             services.ConfigureFromSection<JwtOptions>(Configuration);
 
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddScoped<ITokenService, TokenService>();
-
             services.AddScoped(typeof(DomainTaskStatus));
             services.AddScoped(typeof(ValidateModelAttribute));
+            services.AddScoped(typeof(ErrorHandleAttribute));
 
             services.AddAuthorization(options => options.AddPolicy(AuthPolicies.AuthenticatedUser, AuthenticatedUserPolicy.Policy));
 
