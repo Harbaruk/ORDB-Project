@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -55,6 +56,7 @@ namespace Starter
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IAuthenticatedUser, AuthenticatedUserProvider>();
+            services.AddAutoMapper();
 
             services.AddScoped(typeof(DomainTaskStatus));
             services.AddScoped(typeof(ValidateModelAttribute));
