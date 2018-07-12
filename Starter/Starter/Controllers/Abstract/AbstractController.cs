@@ -15,7 +15,7 @@ namespace Starter.API.Controllers
     /// <seealso cref="ValidateModelAttribute"/>
     [ServiceFilter(typeof(ErrorHandleAttribute))]
     [ServiceFilter(typeof(ValidateModelAttribute))]
-    public class AbstractController : Controller
+    public abstract class AbstractController : Controller
     {
         private readonly DomainTaskStatus _taskStatus;
 
