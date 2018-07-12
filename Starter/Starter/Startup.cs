@@ -19,11 +19,13 @@ using Starter.API.Attributes;
 using Starter.API.Crypto;
 using Starter.API.Extensions;
 using Starter.API.Policies;
+using Starter.API.Providers;
 using Starter.Common.DomainTaskStatus;
 using Starter.CompositionRoot;
 using Starter.DAL;
 using Starter.DAL.Infrastructure;
 using Starter.Services.Crypto;
+using Starter.Services.Providers;
 using Starter.Services.Token;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -52,6 +54,7 @@ namespace Starter
 
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IAuthenticatedUser, AuthenticatedUserProvider>();
 
             services.AddScoped(typeof(DomainTaskStatus));
             services.AddScoped(typeof(ValidateModelAttribute));
