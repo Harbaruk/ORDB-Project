@@ -55,7 +55,7 @@ namespace Starter.Services.Token
 
         public TokenModel GetToken(LoginCredentials loginCredentials)
         {
-            _cacheManager.SetString("user", new UserEntity() { Email = "lol" });
+            _cacheManager.SetValue("user", new UserEntity() { Email = "lol" });
 
             var value = _cacheManager.GetValue<UserEntity>("user");
 
