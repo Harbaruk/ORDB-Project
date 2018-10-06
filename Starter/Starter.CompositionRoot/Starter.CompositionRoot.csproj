@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Starter.ADOProvider\Starter.ADOProvider.csproj" />
     <ProjectReference Include="..\Starter.DAL\Starter.DAL.csproj" />
     <ProjectReference Include="..\Starter.Services\Starter.Services.csproj" />
   </ItemGroup>

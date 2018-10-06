@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
+using Starter.ADOProvider.CommandExecutor;
 using Starter.API.Attributes;
 using Starter.API.Crypto;
 using Starter.API.Extensions;
@@ -50,6 +51,7 @@ namespace Starter
             services.ConfigureFromSection<CryptoOptions>(Configuration);
             services.ConfigureFromSection<JwtOptions>(Configuration);
             services.ConfigureFromSection<RedisOptions>(Configuration);
+            services.ConfigureFromSection<ADOConnectionOptions>(Configuration);
 
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
