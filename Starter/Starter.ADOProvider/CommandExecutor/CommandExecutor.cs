@@ -18,13 +18,14 @@ namespace Starter.ADOProvider.CommandExecutor
             _typeActivator = typeActivator;
         }
 
-        public IEnumerable<T> Execute(string command)
+        public IEnumerable<T> Execute(SqlCommand command)
         {
             var result = new List<T>();
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
-                var sqlcommand = new SqlCommand(command, connection);
-                var reader = sqlcommand.ExecuteReader();
+                connection.Open();
+                command.Connection = connection;
+                var reader = command.ExecuteReader();
                 using (reader)
                 {
                     List<string> fieldNames = new List<string>();
@@ -47,12 +48,25 @@ namespace Starter.ADOProvider.CommandExecutor
             }
         }
 
-        public void ExecuteNonQuery(string command)
+        public int ExecuteScalar(SqlCommand command)
+        {
+            var tableName = command.Parameters["@tableName"];
+            var newId = GetTableIdentity(tableName);
+
+            command.Parameters.Add(new SqlParameter("@id", newId));
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            {
+                command.Connection = connection;
+                return (int)command.ExecuteScalar();
+            }
+        }
+
+        private int GetTableIdentity(SqlParameter tableName)
         {
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
-                var sqlcommand = new SqlCommand(command, connection);
-                sqlcommand.ExecuteNonQuery();
+                var command = new SqlCommand($"select count(*) from{tableName.Value.ToString()}", connection);
+                return (int)command.ExecuteScalar();
             }
         }
     }

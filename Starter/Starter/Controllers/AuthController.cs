@@ -6,7 +6,7 @@ using Starter.Services.Token.Models;
 namespace Starter.API.Controllers
 {
     [Produces("application/json")]
-    [Route("api")]
+    [Route("api/auth")]
     public class AuthController : AbstractController
     {
         private readonly ITokenService _tokenService;

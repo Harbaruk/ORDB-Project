@@ -11,7 +11,7 @@ namespace Starter.Common.TypeActivator
         {
             var resultObject = Activator.CreateInstance<T>();
 
-            var fields = typeof(T).GetFields();
+            var fields = typeof(T).GetProperties();
 
             foreach (var property in properties)
             {

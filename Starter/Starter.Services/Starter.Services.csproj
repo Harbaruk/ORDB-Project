@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Starter.ADOProvider\Starter.ADOProvider.csproj" />
     <ProjectReference Include="..\Starter.Commin\Starter.Common.csproj" />
     <ProjectReference Include="..\Starter.DAL\Starter.DAL.csproj" />
   </ItemGroup>
-
 </Project>
