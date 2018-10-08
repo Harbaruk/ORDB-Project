@@ -14,6 +14,6 @@ namespace Starter.Services.Token.Models
 
         public string RefreshToken { get; set; }
 
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 }
