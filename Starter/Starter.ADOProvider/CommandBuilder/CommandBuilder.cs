@@ -20,32 +20,31 @@ namespace Starter.ADOProvider.CommandBuilder
         }
 
         //TODO: make separator as enum
+        //TODO: use StringBuilder
         public SqlCommand GetList(string tableName, IEnumerable<(WhereClauseSqlModel filter, string separator)> commandOperands)
         {
-            var command = new SqlCommand("select * from @tableName @innerJoin where @whereClause");
+            var command = new SqlCommand($"select * from {tableName} @innerJoin @whereClause;");
 
             var baseTableNames = GetParentTables(tableName);
 
-            var tableNameParameter = new SqlParameter("@tableName", tableName);
-            var innerJoinParameter = new SqlParameter("@innerJoin", GenerateInnerJoin(tableName, baseTableNames));
-            var whereClauseParameter = new SqlParameter("@whereClause", GenerateWhereClause(commandOperands));
-
-            command.Parameters.Add(tableNameParameter);
-            command.Parameters.Add(innerJoinParameter);
-            command.Parameters.Add(whereClauseParameter);
+            command.CommandText = command.CommandText.Replace("@innerJoin", GenerateInnerJoin(tableName, baseTableNames));
+            command.CommandText = command.CommandText.Replace("@whereClause", GenerateWhereClause(commandOperands));
 
             return command;
         }
 
         public SqlCommand DeleteById(string typeName, int id)
         {
-            SqlCommand command = new SqlCommand("delete from @table where Id=@id");
-            var baseTableNames = GetParentTables(typeName);
+            StringBuilder builder = new StringBuilder($"delete from {typeName} where Id=@id;");
 
-            var innerJoinParameter = new SqlParameter("@innerJoin", GenerateInnerJoin(typeName, baseTableNames));
+            var baseTableNames = GetParentTables(typeName);
+            foreach (var table in baseTableNames)
+            {
+                builder.AppendLine($"delete from {table} where Id=@id;");
+            }
             var idParameter = new SqlParameter("@id", id);
 
-            command.Parameters.Add(innerJoinParameter);
+            var command = new SqlCommand(builder.ToString());
             command.Parameters.Add(idParameter);
 
             return command;
@@ -65,8 +64,7 @@ namespace Starter.ADOProvider.CommandBuilder
             }
             else
             {
-                var innerJoinParameter = new SqlParameter("@innerJoin", GenerateInnerJoin(tableName, baseTableNames));
-                command.Parameters.Add(innerJoinParameter);
+                command.CommandText = command.CommandText.Replace("@innerJoin", GenerateInnerJoin(tableName, baseTableNames));
             }
 
             command.Parameters.Add(idParameter);
@@ -79,7 +77,7 @@ namespace Starter.ADOProvider.CommandBuilder
             throw new NotImplementedException();
         }
 
-        public SqlCommand Insert<T>(T obj)
+        public SqlCommand Insert<T>(T obj, int id)
         {
             var baseTypes = GetParentTables(nameof(T));
             baseTypes.Reverse();
@@ -90,13 +88,17 @@ namespace Starter.ADOProvider.CommandBuilder
             for (int i = 0; i < baseTypes.Count; i++)
             {
                 var fields = _typeHelper.GetFields(baseTypes[i]);
-                var idField = fields.FirstOrDefault(x => x.Name == "Id");
-                fields = fields.Except(new List<FieldInfo> { idField });
-                var fieldNames = fields.Select(x => x.Name).Except(new List<string> { "Id" });
 
-                stringBuilder.Append($"insert into {baseTypes[i]} (Id,{string.Join(',', fieldNames)} values (@id,{fields.Select(x => x.GetValue(x).ToString())};");
+                var fieldNames = fields.Select(x => x.Name);
+
+                stringBuilder.AppendLine($"insert into {baseTypes[i]} (@id,{string.Join(',', fieldNames)} values (@id,{String.Join(',', fields.Select(x => x.GetValue(x).ToString()))};");
             }
             return new SqlCommand(stringBuilder.ToString());
+        }
+
+        public SqlCommand GetTableIdentityNextValue(string tableName)
+        {
+            return new SqlCommand($"select MAX(\"Id\") from {tableName})");
         }
 
         private string GenerateInnerJoin(string tableName, List<string> baseTableNames)
@@ -115,12 +117,16 @@ namespace Starter.ADOProvider.CommandBuilder
 
         private string GenerateWhereClause(IEnumerable<(WhereClauseSqlModel filter, string separator)> commandOperands)
         {
-            var stringBuilder = new StringBuilder();
-            foreach (var command in commandOperands)
+            var stringBuilder = new StringBuilder("where ");
+            if (commandOperands != null && commandOperands.Any())
             {
-                stringBuilder.Append($" {command.filter.DestinationField} {GetSqlRepresentation(command.filter.Filter)} {command.filter.ComparisonValue} {command.separator ?? string.Empty} ");
+                foreach (var command in commandOperands)
+                {
+                    stringBuilder.Append($" {command.filter.DestinationField} {GetSqlRepresentation(command.filter.Filter)} {command.filter.ComparisonValue} {command.separator ?? string.Empty} ");
+                }
+                return stringBuilder.ToString();
             }
-            return stringBuilder.ToString();
+            return string.Empty;
         }
 
         private List<string> GetParentTables(string tableName)
