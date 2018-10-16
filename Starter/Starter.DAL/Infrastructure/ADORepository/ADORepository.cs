@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Starter.ADOProvider.CommandBuilder;
 using Starter.ADOProvider.CommandBuilder.Models;
 using Starter.ADOProvider.CommandExecutor;
-using Starter.DAL.Extensions;
+using Starter.Common.Extensions;
 
 namespace Starter.DAL.Infrastructure.ADORepository
 {
@@ -43,8 +42,8 @@ namespace Starter.DAL.Infrastructure.ADORepository
 
         public void Insert(T obj)
         {
-            var identityCommand = _builder.GetTableIdentityNextValue(_transformer.Transform<T>());
-            var id = _commandExecutor.ExecuteScalar(identityCommand);
+            var identityCommand = _builder.GetTableIdentitytValue(_transformer.Transform<T>());
+            var id = _commandExecutor.ExecuteScalar(identityCommand) + 1;
 
             var command = _builder.Insert(obj, id);
         }

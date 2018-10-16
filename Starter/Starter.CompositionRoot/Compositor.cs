@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Starter.ADOProvider.CommandBuilder;
 using Starter.ADOProvider.CommandExecutor;
+using Starter.Common.Extensions;
 using Starter.Common.TypeActivator;
 using Starter.Common.TypeHelper;
-using Starter.DAL.Extensions;
 using Starter.DAL.Infrastructure;
 using Starter.DAL.Infrastructure.ADORepository;
 using Starter.DAL.Infrastructure.ADOUnitOfWork;

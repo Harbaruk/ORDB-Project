@@ -6,17 +6,22 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Starter.ADOProvider.CommandBuilder.Models;
+using Starter.Common.Extensions;
 using Starter.Common.TypeHelper;
 
 namespace Starter.ADOProvider.CommandBuilder
 {
     public class CommandBuilder : ICommandBuilder
     {
+        //TODO: Merge into one class
         private readonly ITypeHelper _typeHelper;
 
-        public CommandBuilder(ITypeHelper typeHelper)
+        private readonly ITypeTransformer _typeTransformer;
+
+        public CommandBuilder(ITypeHelper typeHelper, ITypeTransformer typeTransformer)
         {
             _typeHelper = typeHelper;
+            _typeTransformer = typeTransformer;
         }
 
         //TODO: make separator as enum
@@ -96,7 +101,7 @@ namespace Starter.ADOProvider.CommandBuilder
             return new SqlCommand(stringBuilder.ToString());
         }
 
-        public SqlCommand GetTableIdentityNextValue(string tableName)
+        public SqlCommand GetTableIdentitytValue(string tableName)
         {
             return new SqlCommand($"select MAX(\"Id\") from {tableName})");
         }
@@ -131,7 +136,8 @@ namespace Starter.ADOProvider.CommandBuilder
 
         private List<string> GetParentTables(string tableName)
         {
-            return _typeHelper.GetAllBaseTypes(tableName).Select(x => x.Name).ToList();
+            //TODO: inject IOptions
+            return _typeHelper.GetAllBaseTypes(_typeTransformer.TransformToTypeName(tableName)).Select(x => _typeTransformer.Transform(x.Name)).ToList();
         }
 
         private string GetSqlRepresentation(FilterType filter)

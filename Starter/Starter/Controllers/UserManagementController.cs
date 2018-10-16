@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Starter.Common.DomainTaskStatus;
 using Starter.Services.ADOServices.UserManagement;
 using Starter.Services.UserManagement;
 using Starter.Services.UserManagement.Models;
@@ -7,12 +8,12 @@ namespace Starter.API.Controllers
 {
     [Produces("application/json")]
     [Route("api/user_management")]
-    public class UserManagementController : Controller
+    public class UserManagementController : AbstractController
     {
         private readonly IUserManagementService _userManagementService;
         private readonly IADOUserManagement _iADOUserManagement;
 
-        public UserManagementController(IUserManagementService userManagementService, IADOUserManagement iADOUserManagement)
+        public UserManagementController(IUserManagementService userManagementService, IADOUserManagement iADOUserManagement, DomainTaskStatus domainTask) : base(domainTask)
         {
             _userManagementService = userManagementService;
             _iADOUserManagement = iADOUserManagement;

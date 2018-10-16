@@ -15,7 +15,7 @@ namespace Starter.ADOProvider.CommandBuilder
         SqlCommand DeleteById(string typeName, int id);
         SqlCommand GetList(string tableName, IEnumerable<(WhereClauseSqlModel filter, string separator)> commandOperands);
         SqlCommand Insert<T>(T obj, int id);
-        SqlCommand GetTableIdentityNextValue(string tableName);
+        SqlCommand GetTableIdentitytValue(string tableName);
     }
 
     public enum FilterType

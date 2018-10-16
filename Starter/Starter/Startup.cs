@@ -20,6 +20,7 @@ using Starter.API.Extensions;
 using Starter.API.Policies;
 using Starter.API.Providers;
 using Starter.Common.DomainTaskStatus;
+using Starter.Common.Extensions;
 using Starter.CompositionRoot;
 using Starter.DAL;
 using Starter.Services.CacheManager;
@@ -52,6 +53,7 @@ namespace Starter
             services.ConfigureFromSection<JwtOptions>(Configuration);
             services.ConfigureFromSection<RedisOptions>(Configuration);
             services.ConfigureFromSection<ADOConnectionOptions>(Configuration);
+            services.ConfigureFromSection<TypeNameTransformOptions>(Configuration);
 
             services.AddSingleton<ICryptoContext, AspNetCryptoContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
