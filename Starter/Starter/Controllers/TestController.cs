@@ -25,5 +25,19 @@ namespace Starter.API.Controllers
             _testService.TestAll();
             return Ok();
         }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public IActionResult GetManagerById(int id)
+        {
+            return Ok(_testService.GetManagerById(id));
+        }
+
+        [HttpGet]
+        [Route("all")]
+        public IActionResult GetAllManagers()
+        {
+            return Ok(_testService.GetAllManagers());
+        }
     }
 }

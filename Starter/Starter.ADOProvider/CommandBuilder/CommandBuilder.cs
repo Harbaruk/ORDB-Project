@@ -57,7 +57,7 @@ namespace Starter.ADOProvider.CommandBuilder
 
         public SqlCommand GetById(string tableName, int id)
         {
-            SqlCommand command = new SqlCommand($"select * from {tableName} @innerJoin where Id=@id");
+            SqlCommand command = new SqlCommand($"select * from {tableName} @innerJoin where {tableName}.Id=@id");
             var baseTableNames = GetParentTables(tableName);
             var join = GenerateInnerJoin(tableName, baseTableNames);
 
@@ -69,7 +69,7 @@ namespace Starter.ADOProvider.CommandBuilder
             }
             else
             {
-                command.CommandText = command.CommandText.Replace("@innerJoin", GenerateInnerJoin(tableName, baseTableNames));
+                command.CommandText = command.CommandText.Replace("@innerJoin", join);
             }
 
             command.Parameters.Add(idParameter);
@@ -111,7 +111,7 @@ namespace Starter.ADOProvider.CommandBuilder
             var stringBuilder = new StringBuilder();
             if (baseTableNames.Any())
             {
-                stringBuilder.Append(tableName);
+                //stringBuilder.Append(tableName);
                 foreach (var name in baseTableNames)
                 {
                     stringBuilder.Append($" inner join {name} on {name}.Id = {tableName}.Id ");
@@ -122,9 +122,10 @@ namespace Starter.ADOProvider.CommandBuilder
 
         private string GenerateWhereClause(IEnumerable<(WhereClauseSqlModel filter, string separator)> commandOperands)
         {
-            var stringBuilder = new StringBuilder("where ");
+            var stringBuilder = new StringBuilder();
             if (commandOperands != null && commandOperands.Any())
             {
+                stringBuilder.Append(" where ");
                 foreach (var command in commandOperands)
                 {
                     stringBuilder.Append($" {command.filter.DestinationField} {GetSqlRepresentation(command.filter.Filter)} {command.filter.ComparisonValue} {command.separator ?? string.Empty} ");
