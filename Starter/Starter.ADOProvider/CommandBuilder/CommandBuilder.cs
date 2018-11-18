@@ -57,10 +57,9 @@ namespace Starter.ADOProvider.CommandBuilder
 
         public SqlCommand GetById(string tableName, int id)
         {
-            SqlCommand command = new SqlCommand($"select * from {tableName} @innerJoin where {tableName}.Id=@id");
+            SqlCommand command = new SqlCommand($"select * from {tableName} @innerJoin @outerJoin where {tableName}.Id=@id");
             var baseTableNames = GetParentTables(tableName);
             var join = GenerateInnerJoin(tableName, baseTableNames);
-
             var idParameter = new SqlParameter("@id", id);
 
             if (string.IsNullOrEmpty(join))
@@ -71,7 +70,6 @@ namespace Starter.ADOProvider.CommandBuilder
             {
                 command.CommandText = command.CommandText.Replace("@innerJoin", join);
             }
-
             command.Parameters.Add(idParameter);
 
             return command;
@@ -79,7 +77,34 @@ namespace Starter.ADOProvider.CommandBuilder
 
         public SqlCommand Update<T>(T obj)
         {
-            throw new NotImplementedException();
+            var objType = _typeTransformer.Transform(obj.GetType().Name);
+            var baseTypes = GetParentTables(objType);
+            baseTypes.Reverse();
+            baseTypes.Add(objType);
+
+            var builder = new StringBuilder();
+
+            foreach (var table in baseTypes)
+            {
+                builder.AppendLine($"update {table} set ");
+                var tableProperties = _typeHelper.GetProperties(_typeTransformer.TransformToTypeName(table));
+                var idProperty = tableProperties.FirstOrDefault(x => x.Name == "Id");
+                foreach (var property in tableProperties)
+                {
+                    if (property.PropertyType == typeof(string))
+                    {
+                        builder.AppendLine($"{property.Name}='{property.GetValue(obj).ToString()}', ");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"{property.Name}={property.GetValue(obj).ToString()}, ");
+                    }
+                }
+                builder.Remove(builder.ToString().LastIndexOf(","), 1);
+                builder.Append($"where Id={idProperty.GetValue(obj)};");
+            }
+
+            return new SqlCommand(builder.ToString());
         }
 
         public SqlCommand Insert<T>(T obj, int id)
@@ -92,7 +117,7 @@ namespace Starter.ADOProvider.CommandBuilder
 
             for (int i = 0; i < baseTypes.Count; i++)
             {
-                var fields = _typeHelper.GetFields(baseTypes[i]);
+                var fields = _typeHelper.GetProperties(baseTypes[i]);
 
                 var fieldNames = fields.Select(x => x.Name);
 

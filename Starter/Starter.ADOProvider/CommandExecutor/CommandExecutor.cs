@@ -65,7 +65,7 @@ namespace Starter.ADOProvider.CommandExecutor
         {
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
-                var command = new SqlCommand($"select count(*) from{tableName.Value.ToString()}", connection);
+                var command = new SqlCommand($"select count(*) from {tableName.Value.ToString()}", connection);
                 return (int)command.ExecuteScalar();
             }
         }

@@ -50,7 +50,8 @@ namespace Starter.DAL.Infrastructure.ADORepository
 
         public void Update(T obj)
         {
-            throw new NotImplementedException();
+            var command = _builder.Update(obj);
+            _commandExecutor.Execute(command);
         }
     }
 }

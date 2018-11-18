@@ -29,18 +29,18 @@ namespace Starter.Common.TypeHelper
             return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.GetTypes().Any(t => t.Name == typeName));
         }
 
-        public IEnumerable<string> GetFieldNames(string typeName)
+        public IEnumerable<string> GetPropertiesNames(string typeName)
         {
             var type = GetAssemblyWithType(typeName).GetTypes().FirstOrDefault(x => x.Name == typeName);
 
-            return type.GetFields().Select(x => x.Name);
+            return type.GetProperties().Select(x => x.Name);
         }
 
-        public IEnumerable<FieldInfo> GetFields(string typeName)
+        public IEnumerable<PropertyInfo> GetProperties(string typeName)
         {
             var type = GetAssemblyWithType(typeName).GetTypes().FirstOrDefault(x => x.Name == typeName);
 
-            return type.GetFields().ToList();
+            return type.GetProperties().ToList();
         }
     }
 }
