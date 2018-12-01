@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Starter.Common.DomainTaskStatus;
 using Starter.DAL.Entities;
 using Starter.Services.ADOServices;
@@ -6,14 +11,14 @@ using Starter.Services.ADOServices;
 namespace Starter.API.Controllers
 {
     [Produces("application/json")]
-    [Route("api/worker")]
-    public class WorkerController : AbstractController
+    [Route("api/manager")]
+    public class ManagerController : AbstractController
     {
-        private readonly IBaseService<WorkerEntity> _workerService;
+        private readonly IBaseService<ManagerEntity> _managerService;
 
-        public WorkerController(IBaseService<WorkerEntity> workerService, DomainTaskStatus taskStatus) : base(taskStatus)
+        public ManagerController(IBaseService<ManagerEntity> workerService, DomainTaskStatus taskStatus) : base(taskStatus)
         {
-            _workerService = workerService;
+            _managerService = workerService;
         }
 
         [HttpGet]
@@ -21,22 +26,22 @@ namespace Starter.API.Controllers
         [ProducesResponseType(typeof(WorkerEntity), 200)]
         public IActionResult GetWorkers()
         {
-            return Ok(_workerService.GetAll());
+            return Ok(_managerService.GetAll());
         }
 
         [HttpPost]
         [Route("add")]
-        public IActionResult Insert([FromBody] WorkerEntity worker)
+        public IActionResult Insert([FromBody] ManagerEntity worker)
         {
-            _workerService.Insert(worker);
+            _managerService.Insert(worker);
             return Ok();
         }
 
         [HttpPut]
         [Route("update")]
-        public IActionResult Update([FromBody] WorkerEntity worker)
+        public IActionResult Update([FromBody] ManagerEntity worker)
         {
-            _workerService.Update(worker);
+            _managerService.Update(worker);
             return Ok();
         }
 
@@ -44,7 +49,7 @@ namespace Starter.API.Controllers
         [Route("{id:int}")]
         public IActionResult Delete(int id)
         {
-            _workerService.Delete(id);
+            _managerService.Delete(id);
             return Ok();
         }
 
@@ -53,7 +58,7 @@ namespace Starter.API.Controllers
         [ProducesResponseType(typeof(WorkerEntity), 200)]
         public IActionResult Get(int id)
         {
-            return Ok(_workerService.Get(id));
+            return Ok(_managerService.Get(id));
         }
     }
 }

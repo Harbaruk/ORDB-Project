@@ -55,10 +55,6 @@ namespace Starter.Services.Token
 
         public TokenModel GetToken(LoginCredentials loginCredentials)
         {
-            _cacheManager.SetValue("user", new UserEntity() { Email = "lol" });
-
-            var value = _cacheManager.GetValue<UserEntity>("user");
-
             var user = _unitOfWork.Repository<UserEntity>().Include(x => x.Tokens).FirstOrDefault(x => x.Email == loginCredentials.Email);
 
             if (user == null)
