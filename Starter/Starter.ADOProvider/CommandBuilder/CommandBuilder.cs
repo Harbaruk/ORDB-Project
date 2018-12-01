@@ -57,7 +57,7 @@ namespace Starter.ADOProvider.CommandBuilder
 
         public SqlCommand GetById(string tableName, int id)
         {
-            SqlCommand command = new SqlCommand($"select * from {tableName} @innerJoin @outerJoin where {tableName}.Id=@id");
+            SqlCommand command = new SqlCommand($"select * from {tableName} @innerJoin where {tableName}.Id=@id");
             var baseTableNames = GetParentTables(tableName);
             var join = GenerateInnerJoin(tableName, baseTableNames);
             var idParameter = new SqlParameter("@id", id);
@@ -87,8 +87,9 @@ namespace Starter.ADOProvider.CommandBuilder
             foreach (var table in baseTypes)
             {
                 builder.AppendLine($"update {table} set ");
-                var tableProperties = _typeHelper.GetProperties(_typeTransformer.TransformToTypeName(table));
-                var idProperty = tableProperties.FirstOrDefault(x => x.Name == "Id");
+                var tableProperties = _typeHelper.GetConcreteProperties(_typeTransformer.TransformToTypeName(table));
+
+                var idProperty = _typeHelper.GetProperties(_typeTransformer.TransformToTypeName(table)).FirstOrDefault(x => x.Name == "Id");
                 foreach (var property in tableProperties)
                 {
                     if (property.PropertyType == typeof(string))
