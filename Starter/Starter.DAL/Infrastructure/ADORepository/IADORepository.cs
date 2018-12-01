@@ -8,6 +8,7 @@ namespace Starter.DAL.Infrastructure.ADORepository
     public interface IADORepository<T> where T : class, new()
     {
         void Insert(T obj);
+        IEnumerable<T> GetAll();
         IEnumerable<T> GetList(IEnumerable<(WhereClauseSqlModel, string separator)> command);
         T GetById(int id);
         void Update(T obj);

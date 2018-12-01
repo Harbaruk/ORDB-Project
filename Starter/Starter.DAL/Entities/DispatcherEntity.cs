@@ -6,6 +6,6 @@ namespace Starter.DAL.Entities
 {
     public class DispatcherEntity : WorkerEntity
     {
-        public int Manager { get; set; }
+        public int ManagerId { get; set; }
     }
 }

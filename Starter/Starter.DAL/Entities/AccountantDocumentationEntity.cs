@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Starter.DAL.Entities
 {
-    public class ManagerEntity : WorkerEntity
+    public class AccountantDocumentationEntity : DocumentationEntity
     {
-        public int DirectionId { get; set; }
+        public int BankId { get; set; }
     }
 }

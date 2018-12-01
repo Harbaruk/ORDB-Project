@@ -10,5 +10,6 @@ namespace Starter.DAL.Entities
         public string Name { get; set; }
         public int Major { get; set; }
         public int Parent { get; set; }
+        public string Type { get; set; }
     }
 }

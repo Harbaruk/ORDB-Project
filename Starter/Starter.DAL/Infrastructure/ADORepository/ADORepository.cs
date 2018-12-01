@@ -28,6 +28,12 @@ namespace Starter.DAL.Infrastructure.ADORepository
             _commandExecutor.Execute(command);
         }
 
+        public IEnumerable<T> GetAll()
+        {
+            var command = _builder.GetList(_transformer.Transform<T>(), null);
+            return _commandExecutor.Execute(command);
+        }
+
         public T GetById(int id)
         {
             var command = _builder.GetById(_transformer.Transform<T>(), id);
@@ -42,10 +48,12 @@ namespace Starter.DAL.Infrastructure.ADORepository
 
         public void Insert(T obj)
         {
-            var identityCommand = _builder.GetTableIdentitytValue(_transformer.Transform<T>());
+            var identityCommand = _builder.GetTableIdentitytValue("AbstractObject");
             var id = _commandExecutor.ExecuteScalar(identityCommand) + 1;
 
             var command = _builder.Insert(obj, id);
+
+            _commandExecutor.Execute(command);
         }
 
         public void Update(T obj)

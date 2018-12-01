@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Starter.DAL.Entities
 {
-    public class ManagerEntity : WorkerEntity
+    public class ContractEntity : ClientDocumentationEntity
     {
-        public int DirectionId { get; set; }
+        public DateTimeOffset StartDate { get; set; }
     }
 }

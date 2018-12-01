@@ -7,6 +7,7 @@ using Starter.Common.TypeHelper;
 using Starter.DAL.Infrastructure;
 using Starter.DAL.Infrastructure.ADORepository;
 using Starter.DAL.Infrastructure.ADOUnitOfWork;
+using Starter.Services.ADOServices;
 using Starter.Services.ADOServices.UserManagement;
 using Starter.Services.Test;
 using Starter.Services.Token;
@@ -30,6 +31,7 @@ namespace Starter.CompositionRoot
             services.AddScoped<IUserManagementService, UserManagementService>();
             services.AddScoped<IADOUserManagement, ADOUserService>();
             services.AddScoped<ITestService, TestService>();
+            services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 
             services.AddScoped(typeof(ITypeActivator<>), typeof(TypeActivator<>));
             services.AddScoped<ITypeHelper, TypeHelper>();

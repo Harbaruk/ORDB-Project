@@ -109,26 +109,53 @@ namespace Starter.ADOProvider.CommandBuilder
 
         public SqlCommand Insert<T>(T obj, int id)
         {
-            var baseTypes = GetParentTables(nameof(T));
+            var objType = _typeTransformer.Transform(obj.GetType().Name);
+            var baseTypes = GetParentTables(objType);
             baseTypes.Reverse();
-            baseTypes.Add(nameof(T));
+            baseTypes.Add(objType);
 
             var stringBuilder = new StringBuilder();
 
             for (int i = 0; i < baseTypes.Count; i++)
             {
-                var fields = _typeHelper.GetProperties(baseTypes[i]);
+                var fields = _typeHelper.GetConcreteProperties(_typeTransformer.TransformToTypeName(baseTypes[i]));
 
-                var fieldNames = fields.Select(x => x.Name);
+                fields = fields.Except(fields.Where(x => x.Name == "Id"));
 
-                stringBuilder.AppendLine($"insert into {baseTypes[i]} (@id,{string.Join(',', fieldNames)} values (@id,{String.Join(',', fields.Select(x => x.GetValue(x).ToString()))};");
+                var fieldNames = fields.Select(x => x.Name).Except(fields.Where(x => x.Name == "Id").Select(x => x.Name));
+
+                var values = GenerateValueRow(obj, fields);
+
+                stringBuilder.AppendLine($"insert into {baseTypes[i]} (Id,{string.Join(',', fieldNames)}) values ({id},{values});");
             }
+
             return new SqlCommand(stringBuilder.ToString());
+        }
+
+        private string GenerateValueRow<T>(T obj, IEnumerable<PropertyInfo> fields)
+        {
+            if (!fields.Any())
+            {
+                return null;
+            }
+            var result = "";
+            foreach (var field in fields)
+            {
+                if (field.PropertyType == typeof(string))
+                {
+                    result += $"'{field.GetValue(obj)}',";
+                }
+                else
+                {
+                    result += $"{field.GetValue(obj).ToString()},";
+                }
+            }
+            return result.TrimEnd(',');
         }
 
         public SqlCommand GetTableIdentitytValue(string tableName)
         {
-            return new SqlCommand($"select MAX(\"Id\") from {tableName})");
+            return new SqlCommand($"select MAX(\"Id\") from {tableName}");
         }
 
         private string GenerateInnerJoin(string tableName, List<string> baseTableNames)

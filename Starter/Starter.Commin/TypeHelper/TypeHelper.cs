@@ -42,5 +42,12 @@ namespace Starter.Common.TypeHelper
 
             return type.GetProperties().ToList();
         }
+
+        public IEnumerable<PropertyInfo> GetConcreteProperties(string typeName)
+        {
+            var type = GetAssemblyWithType(typeName).GetTypes().FirstOrDefault(x => x.Name == typeName);
+
+            return type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance).ToList();
+        }
     }
 }

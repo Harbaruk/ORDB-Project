@@ -36,6 +36,8 @@ namespace Starter.Services.Test
 
         public void TestAll()
         {
+            _unitOfWork.Repository<TestEntity>().Update(new TestEntity { Id = 1, Text = "hello" });
+            var result = _unitOfWork.Repository<DispatcherEntity>().GetById(2);
             var result1 = _unitOfWork.Repository<TestEntity>().GetList(null);
         }
     }

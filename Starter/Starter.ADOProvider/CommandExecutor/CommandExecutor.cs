@@ -50,14 +50,16 @@ namespace Starter.ADOProvider.CommandExecutor
 
         public int ExecuteScalar(SqlCommand command)
         {
-            var tableName = command.Parameters["@tableName"];
-            var newId = GetTableIdentity(tableName);
-
-            command.Parameters.Add(new SqlParameter("@id", newId));
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
                 command.Connection = connection;
-                return (int)command.ExecuteScalar();
+                connection.Open();
+                try
+                {
+                    return (int)command.ExecuteScalar();
+                }
+                catch
+                { return 0; }
             }
         }
 

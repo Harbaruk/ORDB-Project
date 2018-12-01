@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Starter.DAL.Entities
 {
-    public class ManagerEntity : WorkerEntity
+    public class DriverEntity : WorkerEntity
     {
-        public int DirectionId { get; set; }
+        public int ManagerId { get; set; }
     }
 }
